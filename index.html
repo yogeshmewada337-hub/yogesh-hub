@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yogesh Hub - Image Compressor</title>
+<style>
+body{font-family:Arial;background:#f1f5f9;text-align:center;padding:25px}
+.box{background:white;padding:25px;border-radius:15px;max-width:500px;margin:auto}
+button{background:#2563eb;color:white;padding:12px 20px;border:0;border-radius:8px;cursor:pointer}
+img{max-width:100%;margin:15px}
+</style>
+</head>
+<body>
+<div class="box">
+<h1>Yogesh Hub</h1>
+<h2>Free Image Compressor</h2>
+<p>Compress your image easily and free.</p>
+<input type="file" id="file" accept="image/*">
+<br><br>
+<label>Image Quality: <span id="qualityValue">70</span>%</label>
+<br>
+<input type="range" id="quality" min="10" max="100" value="70">
+<br><br>
+<button onclick="compress()">Compress Image</button>
+<p id="result"></p>
+<img id="preview">
+<br>
+<a id="download" style="display:none" download="compressed-image.jpg">
+<button>Download Compressed Image</button>
+</a>
+</div>
+<script>
+function compress(){
+const file=document.getElementById('file').files[0];
+if(!file){alert('Please select an image');return;}
+const quality=document.getElementById('quality').value/100;
+const reader=new FileReader();
+reader.onload=e=>{
+const img=new Image();
+img.onload=()=>{
+const canvas=document.createElement('canvas');
+canvas.width=img.width;
+canvas.height=img.height;
+canvas.getContext('2d').drawImage(img,0,0);
+canvas.toBlob(blob=>{
+const url=URL.createObjectURL(blob);
+document.getElementById('preview').src=url;
+document.getElementById('download').href=url;
+document.getElementById('download').style.display='inline-block';
+document.getElementById('result').innerText='Original: '+Math.round(file.size/1024)+' KB | Compressed: '+Math.round(blob.size/1024)+' KB';
+},'image/jpeg',quality);
+};
+img.src=e.target.result;
+};
+reader.readAsDataURL(file);
+}
+document.getElementById('quality').oninput=function(){
+document.getElementById('qualityValue').innerText=this.value;
+};
+</script>
+</body>
+</html>
